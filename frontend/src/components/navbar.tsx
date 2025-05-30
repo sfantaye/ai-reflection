@@ -8,68 +8,52 @@ import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
-  DropdownMenuItem
+  DropdownMenuItem,
 } from '@/components/ui/dropdown-menu'
-import {
-  Tooltip,
-  TooltipTrigger,
-  TooltipContent,
-  TooltipProvider
-} from '@/components/ui/tooltip'
 
 export function Navbar() {
   return (
-    <TooltipProvider>
-      <nav className="w-1/2 mx-auto border-b border-orange-500 rounded-b-[2em] bg-background shadow-sm">
-        <div className="px-4 py-5 flex items-center justify-between">
-          {/* Site Icon + Title */}
-          <Link href="/" className="text-xl font-semibold tracking-tight">
-            <span className="inline-flex items-center gap-2">
-              <span className="sm:hidden">AI-R</span>
-              <span className="hidden sm:inline">AI Reflection</span>
-            </span>
+    <nav className="fixed top-0 z-50 rounded-b-[2em] w-full bg-white/80 dark:bg-black/80 backdrop-blur-md border-b border-orange-500">
+      <div className="max-w-2xl mx-auto px-4 py-4 sm:py-5 flex items-center justify-between">
+        {/* Site Title / Logo */}
+        <Link href="/" className="text-xl font-semibold tracking-tight">
+          <span className="inline-flex items-center gap-2">
+            <span className="sm:hidden">AI-<span className="text-orange-500">R</span></span>
+            <span className="hidden sm:inline">AI <span className="text-orange-500">Reflection</span></span>
+          </span>
+        </Link>
+
+        {/* Desktop Navigation */}
+        <div className="hidden sm:flex items-center gap-2">
+          <Link href="/about">
+            <Button variant="ghost">About</Button>
           </Link>
-
-          {/* Desktop Menu */}
-          <div className="hidden sm:flex items-center gap-2">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                  <Button variant="ghost">About</Button>
-              </TooltipTrigger>
-              <TooltipContent side="bottom">By Sintayehu Fantaye</TooltipContent>
-            </Tooltip>
-
-            <Tooltip>
-              <TooltipTrigger asChild>
-                  <Button variant="ghost">Contact</Button>
-              </TooltipTrigger>
-              <TooltipContent side="bottom">Wait! Big thing is coming</TooltipContent>
-            </Tooltip>
-
-            <ThemeToggle />
-          </div>
-
-          {/* Mobile Menu */}
-          <div className="sm:hidden flex items-center gap-2">
-            <ThemeToggle />
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon">
-                  <Menu className="h-5 w-5" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem asChild>
-                  <Link href="/about">About</Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link href="/contact">Contact</Link>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
+          <Link href="/contact">
+            <Button variant="ghost">Contact</Button>
+          </Link>
+          <ThemeToggle />
         </div>
-      </nav>
-    </TooltipProvider>
+
+        {/* Mobile Navigation */}
+        <div className="sm:hidden flex items-center gap-1">
+          <ThemeToggle />
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon">
+                <Menu className="h-5 w-5" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem asChild>
+                <Link href="/about">About</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href="/contact">Contact</Link>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      </div>
+    </nav>
   )
 }
