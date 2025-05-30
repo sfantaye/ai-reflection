@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Navbar } from '@/components/navbar'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -11,25 +11,77 @@ import { Smile, Frown, HelpCircle, Loader2, Send } from 'lucide-react'
 
 export default function Home() {
   const [entry, setEntry] = useState('')
-  const [response, setResponse] = useState('')
+  const [response, setResponse] = useState<{ reflection: string; affirmation: string } | null>(null)
   const [loading, setLoading] = useState(false)
+  const [typedReflection, setTypedReflection] = useState('')
+  const [typedAffirmation, setTypedAffirmation] = useState('')
+  const [isTyping, setIsTyping] = useState(false)
+  const [isTypingAffirmation, setIsTypingAffirmation] = useState(false)
 
-  const handleSubmit = async () => {
-    if (!entry.trim()) return
 
-    setLoading(true)
-    setResponse('')
 
-    try {
-      const result = await fetchReflection(entry)
-      setResponse(result)
-    } catch (error) {
-      setResponse('An error occurred. Please try again later.')
-      console.error(error)
-    } finally {
-      setLoading(false)
-    }
+const handleSubmit = async () => {
+  if (!entry.trim()) return
+
+  setLoading(true)
+  setIsTyping(false)
+  setIsTypingAffirmation(false)
+  setTypedReflection('')
+  setTypedAffirmation('')
+  setResponse(null)
+
+  try {
+    const result = await fetchReflection(entry)
+    setResponse(result)
+    setIsTyping(true)
+  } catch (error) {
+    console.error(error)
+    setResponse({
+      reflection: 'An error occurred.',
+      affirmation: 'Please try again later.'
+    })
+  } finally {
+    setLoading(false)
   }
+}
+
+
+useEffect(() => {
+  if (response && isTyping) {
+    let reflectionIndex = 0
+    let affirmationIndex = 0
+
+    const typeReflection = () => {
+      if (reflectionIndex <= response.reflection.length) {
+        setTypedReflection(response.reflection.slice(0, reflectionIndex))
+        reflectionIndex++
+        setTimeout(typeReflection, 25)
+      } else {
+        setIsTyping(false) 
+        setIsTypingAffirmation(true)
+        setTimeout(typeAffirmation, 500)
+      }
+    }
+
+    const typeAffirmation = () => {
+      if (affirmationIndex <= response.affirmation.length) {
+        setTypedAffirmation(response.affirmation.slice(0, affirmationIndex))
+        affirmationIndex++
+        setTimeout(typeAffirmation, 25)
+      } else {
+        setIsTypingAffirmation(false) 
+      }
+    }
+
+    typeReflection()
+  }
+}, [response, isTyping])
+
+
+
+
+
+
 
 const examplePrompts = [
   {
@@ -54,7 +106,7 @@ const examplePrompts = [
 
       <div className="flex flex-col flex-grow max-w-2xl mx-auto w-full px-4 pb-4 pt-12">
         {/* Example Prompts */}
-        {!response && (
+       {!response && !loading && !isTyping && !isTypingAffirmation && (
   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6 place-items-center">
     {examplePrompts.map((prompt) => (
       <Card
@@ -69,17 +121,31 @@ const examplePrompts = [
   </div>
 )}
 
-
         {/* Response Area */}
-        {response && (
-          <div className="flex-grow mb-4 pt-6">
-            <Card className="p-6 bg-transparent shadow-none border-none mx-auto">
-              <pre className="whitespace-pre-wrap text-base leading-relaxed text-center">
-                {response}
-              </pre>
-            </Card>
-          </div>
-        )}
+        {(loading || response) && (
+  <div className="flex-grow mb-4 pt-6">
+    <Card className="p-6 bg-transparent shadow-none border-none mx-auto">
+      <div className="text-center space-y-4">
+        <p className="text-lg leading-relaxed text-foreground min-h-[3rem]">
+          {typedReflection}
+          {(isTyping && !isTypingAffirmation) && (
+            <span className="animate-pulse text-orange-500">|</span>
+          )}
+        </p>
+
+        <p className="text-green-600 font-semibold text-base min-h-[2rem]">
+          {typedAffirmation && (
+            <>
+              <span className="text-orange-400">✨ Affirmation:</span> {typedAffirmation}
+              {isTypingAffirmation && <span className="animate-pulse text-orange-500">|</span>}
+            </>
+          )}
+        </p>
+      </div>
+    </Card>
+  </div>
+)}
+
 
         {/* Input Area */}
 <Card className="p-4 border-b-4 border-b-orange-500 shadow-md border rounded-[2em] fixed bottom-6 left-0 right-0 max-w-2xl mx-auto bg-background z-50">

@@ -1,32 +1,26 @@
-from pydantic import BaseSettings, Field
-from functools import lru_cache
+import os
+from pydantic_settings import BaseSettings, SettingsConfigDict
+from pathlib import Path
 
+# Determine the base directory of your project (backend folder)
+# This helps in reliably finding the .env file
+BASE_DIR = Path(__file__).resolve().parent.parent # This should point to the 'backend' directory
 
 class Settings(BaseSettings):
-    # Project settings
-    PROJECT_NAME: str = "Journal Reflection API"
-    API_V1_STR: str = "/api/v1"
+    APP_NAME: str = "AI Reflection API"
+    GEMINI_API_KEY: str # Pydantic will raise an error if this is not set
 
-    # OpenAI
-    OPENAI_API_KEY: str = Field(..., env="OPENAI_API_KEY")
-    OPENAI_MODEL: str = "gpt-4"
+    # Add other settings as needed
+    # API_V1_STR: str = "/api/v1"
+    # DEBUG_MODE: bool = False
 
-    # Server
-    HOST: str = "0.0.0.0"
-    PORT: int = 8000
-    RELOAD: bool = True  # Set to False in production
+    model_config = SettingsConfigDict(
+        env_file=os.path.join(BASE_DIR, ".env"), # Explicitly point to your .env file
+        env_file_encoding='utf-8',
+        extra='ignore' # Ignore extra environment variables not defined in Settings
+    )
 
-    # Other integrations (future-proofing)
-    LANGCHAIN_TRACING: bool = False
+settings = Settings()
 
-    class Config:
-        env_file = ".env"
-        env_file_encoding = "utf-8"
-
-
-@lru_cache()
-def get_settings() -> Settings:
-    return Settings()
-
-
-
+if not settings.GEMINI_API_KEY:
+   print("CRITICAL ERROR: GEMINI_API_KEY not found. Check your .env file and config.py.")
