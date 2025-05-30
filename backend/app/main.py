@@ -37,6 +37,10 @@ def read_root():
 def root_head():
     return {}
 
+@app.get("/health")
+async def health_check():
+    return {"status": "ok"}
+
 app.include_router(router, prefix="/api", tags=["journal"])
 
 
