@@ -32,6 +32,11 @@ app.add_middleware(
 @app.get("/")
 def read_root():
     return {"message": "Welcome to the Journal Reflection API!"}
+
+@app.head("/", include_in_schema=False)
+def root_head():
+    return {}
+
 app.include_router(router, prefix="/api", tags=["journal"])
 
 
