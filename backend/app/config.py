@@ -7,6 +7,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 class Settings(BaseSettings):
     APP_NAME: str = "AI Reflection API"
     GEMINI_API_KEY: str
+    BACKEND_ORIGINS: list[str]
 
     model_config = SettingsConfigDict(
         env_file=os.path.join(BASE_DIR, ".env"),
