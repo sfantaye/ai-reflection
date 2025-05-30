@@ -23,12 +23,15 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[settings.BACKEND_ORIGINS],  
+    allow_origins=["*"],  
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
+@app.get("/")
+def read_root():
+    return {"message": "Welcome to the Journal Reflection API!"}
 app.include_router(router, prefix="/api", tags=["journal"])
 
 
