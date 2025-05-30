@@ -1,8 +1,0 @@
-services:
-  - type: web
-    name: ai-reflection
-    env: python
-    buildCommand: ""
-    startCommand: ./start.sh
-    plan: free
-    autoDeploy: true
