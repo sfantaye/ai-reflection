@@ -2,7 +2,7 @@ import logging
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.routes import router 
-from app.config import settings
+from fastapi.responses import JSONResponse
 
 
 logging.basicConfig(
@@ -37,9 +37,9 @@ def read_root():
 def root_head():
     return {}
 
-@app.get("/health")
+@app.api_route("/health", methods=["GET", "HEAD"])
 async def health_check():
-    return {"status": "ok"}
+    return JSONResponse(content={"status": "ok"})
 
 app.include_router(router, prefix="/api", tags=["journal"])
 
